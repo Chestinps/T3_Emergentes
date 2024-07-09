@@ -2,7 +2,7 @@
 ``` 
 source venv/bin/activate
 ```
-Paso 2: Instalar los módulos
+## Paso 2: Instalar los módulos
 ```
 pip install django
 pip install djangorestframework
