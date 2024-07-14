@@ -16,5 +16,5 @@ python manage.py runserver
 ```
 ## Paso 4: Entrar al Rest Framwork
 ```
-127.0.0.1:8000/t3/
+127.0.0.1:8000/api/v1/
 ```
