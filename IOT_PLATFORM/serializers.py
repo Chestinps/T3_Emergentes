@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Admin, Company, Location, Sensor
+from .models import Admin, Company, Location, Sensor, SensorData
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,4 +19,9 @@ class LocationSerializer(serializers.ModelSerializer):
 class SensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sensor
+        fields = '__all__'
+
+class SensorDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorData
         fields = '__all__'
