@@ -4,4 +4,5 @@ from .models import Company
 
 class IsCompanyAuthenticated(BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated
+        # Check if request.user is a Company instance
+        return isinstance(request.user, Company)

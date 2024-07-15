@@ -10,10 +10,9 @@ class CompanyAuthentication(BaseAuthentication):
 
         try:
             company = Company.objects.get(company_api_key=api_key)
+            return (company, None)
         except Company.DoesNotExist:
-            raise AuthenticationFailed('Invalid API key')
-
-        return (company, None)
+            return None
 
 class SensorAuthentication(BaseAuthentication):
     def authenticate(self, request):

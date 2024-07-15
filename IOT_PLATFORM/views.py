@@ -86,10 +86,12 @@ class LocationViewSet(viewsets.ModelViewSet):
 class SensorViewSet(viewsets.ModelViewSet):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
-    permission_classes = [IsAuthenticated, IsCompanyAuthenticated]
+    authentication_classes = [CompanyAuthentication]
+    permission_classes = [IsCompanyAuthenticated]
 
     def get_queryset(self):
-        return Sensor.objects.filter(location__company=self.request.user)
+        # Filter sensors by the company of the authenticated user
+        return Sensor.objects.filter(location_id__company_id=self.request.user)
     
 class SensorDataViewSet(viewsets.ModelViewSet):
     queryset = SensorData.objects.all()
