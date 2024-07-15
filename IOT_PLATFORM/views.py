@@ -3,10 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import Company, Location, Sensor, SensorData, Admin
-from .serializers import LocationSerializer, SensorSerializer, SensorDataSerializer, CompanySerializer, AdminSerializer
+from .models import Company, Location, Sensor, SensorData
+from .serializers import LocationSerializer, SensorSerializer, SensorDataSerializer, CompanySerializer
 from .authentication import CompanyAuthentication, SensorAuthentication
-from .permissions import IsCompanyAuthenticated
+from .permissions import IsCompanyAuthenticated, IsSensorAuthenticated
+
 from rest_framework.permissions import AllowAny
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -93,11 +94,12 @@ class SensorViewSet(viewsets.ModelViewSet):
         # Filter sensors by the company of the authenticated user
         return Sensor.objects.filter(location_id__company_id=self.request.user)
     
+
 class SensorDataViewSet(viewsets.ModelViewSet):
     queryset = SensorData.objects.all()
     serializer_class = SensorDataSerializer
     authentication_classes = [SensorAuthentication]
-    permission_classes = [IsAuthenticated, AllowAny]  # Permitir acceso autenticado y sin autenticar
+    permission_classes = [IsSensorAuthenticated]
 
     def create(self, request, *args, **kwargs):
         api_key = request.headers.get('Sensor-Api-Key')
@@ -109,7 +111,7 @@ class SensorDataViewSet(viewsets.ModelViewSet):
         except Sensor.DoesNotExist:
             return Response({'detail': 'Invalid API key'}, status=status.HTTP_400_BAD_REQUEST)
 
-        request.data['sensor_id'] = sensor.ID  # Ajusta aquí para usar ID
+        request.data['sensor_id'] = sensor.ID  # Adjust here to use ID
         return super().create(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'])
@@ -118,18 +120,18 @@ class SensorDataViewSet(viewsets.ModelViewSet):
         to_timestamp = request.query_params.get('to')
         sensor_ids = request.query_params.getlist('sensor_id')
 
-        # Verifica si los timestamps están presentes y en formato correcto
+        # Verify if the timestamps are present and in correct format
         if not from_timestamp or not to_timestamp:
             return Response({'detail': 'Required parameters: from, to'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Intenta convertir los timestamps a objetos datetime
+            # Try to convert the timestamps to datetime objects
             from_timestamp = datetime.fromisoformat(from_timestamp)
             to_timestamp = datetime.fromisoformat(to_timestamp)
         except ValueError:
             return Response({'detail': 'Invalid timestamp format'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Filtra los datos de SensorData según los parámetros
+        # Filter SensorData based on the parameters
         queryset = self.get_queryset().filter(
             sensor_id__in=sensor_ids,
             sensor_data_time__gte=from_timestamp,

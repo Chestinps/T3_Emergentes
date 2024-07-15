@@ -56,6 +56,11 @@ class Sensor(models.Model):
     def __str__(self):
         return self.sensor_name
 
+    @property
+    def is_authenticated(self):
+        # Custom property to mimic the is_authenticated attribute
+        return True
+
 class SensorData(models.Model):
     ID = models.AutoField(primary_key=True)
     sensor_id = models.ForeignKey(Sensor, on_delete=models.CASCADE)

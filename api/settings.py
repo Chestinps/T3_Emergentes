@@ -134,6 +134,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'IOT_PLATFORM.authentication.CompanyAuthentication',
+        'IOT_PLATFORM.authentication.SensorAuthentication',
     ),
 }
 
