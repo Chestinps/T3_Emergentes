@@ -10,4 +10,7 @@ router.register(r'sensor-data', views.SensorDataViewSet, basename='sensordata')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('register/', views.UserRegisterView.as_view()),
+    path('login/', views.UserLoginView.as_view()),
+    path('logout/', views.UserLogoutView.as_view()),
 ]
