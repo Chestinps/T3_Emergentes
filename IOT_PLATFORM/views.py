@@ -79,19 +79,25 @@ class CompanyViewSet(viewsets.ModelViewSet):
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    authentication_classes = [CompanyAuthentication]
     permission_classes = [IsAuthenticated, IsCompanyAuthenticated]
 
     def get_queryset(self):
-        return Location.objects.filter(company=self.request.user)
+        # Asumiendo que tienes una relación directa entre User y Company
+        # y que el usuario autenticado tiene una relación con una instancia de Company
+        if hasattr(self.request.user, 'company'):  # Verifica si el usuario tiene una empresa asociada
+            company_id = self.request.user.company.id
+            return Location.objects.filter(company_id=company_id)
+        else:
+            return Location.objects.none()  # O maneja el caso cuando el usuario no tiene una empresa asociada
 
 class SensorViewSet(viewsets.ModelViewSet):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
     authentication_classes = [CompanyAuthentication]
-    permission_classes = [IsCompanyAuthenticated]
+    permission_classes = [IsAuthenticated, IsCompanyAuthenticated]
 
     def get_queryset(self):
-        # Filter sensors by the company of the authenticated user
         return Sensor.objects.filter(location_id__company_id=self.request.user)
     
 
@@ -99,7 +105,7 @@ class SensorDataViewSet(viewsets.ModelViewSet):
     queryset = SensorData.objects.all()
     serializer_class = SensorDataSerializer
     authentication_classes = [SensorAuthentication]
-    permission_classes = [IsSensorAuthenticated]
+    permission_classes = [IsAuthenticated, IsSensorAuthenticated]
 
     def create(self, request, *args, **kwargs):
         api_key = request.headers.get('Sensor-Api-Key')
