@@ -1,17 +1,29 @@
-# yourapp/authentication.py
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from .models import Company
+from .models import Company, Sensor
 
 class CompanyAuthentication(BaseAuthentication):
     def authenticate(self, request):
         api_key = request.headers.get('Company-Api-Key')
         if not api_key:
-            raise AuthenticationFailed('Company-Api-Key header is required')
-        
+            return None
+
         try:
             company = Company.objects.get(company_api_key=api_key)
         except Company.DoesNotExist:
             raise AuthenticationFailed('Invalid API key')
 
         return (company, None)
+
+class SensorAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        api_key = request.headers.get('Sensor-Api-Key')
+        if not api_key:
+            return None
+
+        try:
+            sensor = Sensor.objects.get(sensor_api_key=api_key)
+        except Sensor.DoesNotExist:
+            raise AuthenticationFailed('Invalid API key')
+
+        return (sensor, None)

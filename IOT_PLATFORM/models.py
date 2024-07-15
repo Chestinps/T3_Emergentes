@@ -34,7 +34,6 @@ class Location(models.Model):
     def __str__(self):
         return self.location_name
 
-
 class Sensor(models.Model):
     ID = models.AutoField(primary_key=True)
     location_id = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -45,13 +44,12 @@ class Sensor(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.sensor_api_key:
-            # Generate a unique API key
             self.sensor_api_key = str(uuid.uuid4())
         super(Sensor, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.sensor_name
-    
+
 class SensorData(models.Model):
     ID = models.AutoField(primary_key=True)
     sensor_id = models.ForeignKey(Sensor, on_delete=models.CASCADE)
